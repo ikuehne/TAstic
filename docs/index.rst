@@ -16,5 +16,3 @@ Contents
    :maxdepth: 2
 
    overview
-
-* :ref:`genindex`
