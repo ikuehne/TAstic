@@ -6,14 +6,12 @@
 TAstic: Tools for happier TAs.
 ==============================
 
-Contents:
+Contents
+--------
 
 .. toctree::
    :maxdepth: 2
    overview.rst
-
-Contents
---------
 
 * :ref:`genindex`
 * :ref:`modindex`
