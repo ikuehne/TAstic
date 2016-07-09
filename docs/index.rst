@@ -15,4 +15,4 @@ Contents
 .. toctree::
    :maxdepth: 2
 
-   overview
+   Getting started <intro>
