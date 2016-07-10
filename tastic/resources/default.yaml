@@ -1,0 +1,8 @@
+# The default TAstic configurationf file.  Should always specify every
+# available field.
+---
+submission_format: (?P<name>.*)
+submission_dir: yes
+
+rename: no
+...
