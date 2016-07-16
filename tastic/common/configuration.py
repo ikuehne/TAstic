@@ -1,3 +1,8 @@
+"""Parsing config files and packagin configurations."""
+
+import os
+import re
+
 import yaml
 
 from error import Error
@@ -78,6 +83,21 @@ class Configuration(object):
 
         self._validate()
 
+    def is_submission(self, candidate):
+        """Return True iff the candidate path is a submission.
+
+        Checks that the candidate matches the filename specification for
+        submissions.  If submissions are supposed to be directories, also checks
+        for that.
+        """
+        if not re.compile(self.submission_format).match(candidate):
+            return False
+
+        if self.submission_dir and not os.isdir(candidate):
+            return False
+
+        return True
+
     def _validate(self):
         """Check that all fields are known and have the expected types.
 
@@ -88,7 +108,14 @@ class Configuration(object):
 
         if unknown_fields:
             unknowns = ', '.join(unknown_fields)
-            raise InvalidConfigError("Unrecognized fields: ", unknowns)
+            raise InvalidConfigError("Unrecognized fields: %s" % unknowns)
+
+        unspecified_fields = list(Configuration.fields.keys() -
+                                  self.__dict__.keys())
+
+        if unspecified_fields:
+            unspecifieds = ', '.join(unspecified_fields)
+            raise InvalidConfigError("No value found: %s" % unspecifieds)
 
         for item in self.__dict__.items():
             Configuration._check_type(*item)
