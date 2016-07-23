@@ -4,7 +4,8 @@ import argparse
 
 import init
 
-SUBCOMMANDS = [init]
+INVOKE = "invoke"
+SUBCOMMANDS = [init.InitSubCommand]
 WHICH_SUBCOMMAND = "subcommand"
 
 def subcommand_names():
@@ -22,10 +23,15 @@ def main():
 
     # Add subparsers for each subcommand.
     for command in SUBCOMMANDS:
-        command_parser = subparsers.add_parser(command.__name__)
-        command.arg_parser(command_parser)
+        command(subparsers, INVOKE)
 
-    parser.parse_args()
+    args = parser.parse_args()
+    # If a subcommand is indicated, invoke the subcommand,
+    try:
+        args.__getattribute__(INVOKE)(args)
+    # and otherwise tell the user they're doing it wrong.
+    except AttributeError:
+        parser.print_help()
 
 if __name__ == "__main__":
     main()

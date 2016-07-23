@@ -2,29 +2,30 @@ import argparse
 import os.path
 import pkg_resources
 
-from common import configuration, assignment
+from common import configuration, assignment, subcommand
 
 DEFAULT_CONFIG = pkg_resources.resource_filename(__name__,
                                                  "resources/default.yaml")
 
-def create_assignment(path):
-    default = configuration.Configuration(yamls=[DEFAULT_CONFIG])
-    return assignment.Assignment(path, default_config=default)
+class InitSubCommand(subcommand.SubCommand):
 
-def arg_parser(parser=None):
-    """Create an ``ArgumentParser`` for the init subcommand.
+    def invoke(self, args):
+        pass
 
-    :param parser: The parser to modify.
-    """
-    parser.add_argument("assignment",
-                        nargs="?",
-                        default=os.path.realpath("."))
-    for (field, t) in configuration.Configuration.fields.items():
-        parser.add_argument("--" + field, nargs=1, type=t, required=False)
+    def name(self):
+        return "init"
 
-def main():
-    parser = arg_parser()
-    parser.parse_args()
+    def __init__(self, subparsers, invoke):
+        super(InitSubCommand, self).__init__(subparsers, invoke)
+        self.parser.add_argument("assignment",
+                                 nargs="?",
+                                 default=os.path.realpath("."))
+        for (field, t) in configuration.Configuration.fields.items():
+            self.parser.add_argument("--" + field,
+                                     nargs=1,
+                                     type=t,
+                                     required=False)
 
-if __name__ == "__main__":
-    main()
+    def create_assignment(self, path):
+        default = configuration.Configuration(yamls=[DEFAULT_CONFIG])
+        return assignment.Assignment(path, default_config=default)
