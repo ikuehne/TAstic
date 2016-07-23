@@ -63,12 +63,13 @@ class Configuration(object):
         """
 
         self.__dict__.update(kwargs)
-        self._validate()
 
-        if path is not None:
+        if yamls is not None:
             # Load every config file in the list.
             for path in yamls:
                 self.load(path)
+
+        self._validate()
 
     def load(self, config_path):
         """Load the given configuration file."""
@@ -93,7 +94,7 @@ class Configuration(object):
         if not re.compile(self.submission_format).match(candidate):
             return False
 
-        if self.submission_dir and not os.isdir(candidate):
+        if self.submission_dir and not os.path.isdir(candidate):
             return False
 
         return True
@@ -119,3 +120,15 @@ class Configuration(object):
 
         for item in self.__dict__.items():
             Configuration._check_type(*item)
+
+    def dump(self, out):
+
+        # Open the file if it is not already a filestream.
+        if isinstance(out, str):
+            out = open(out, 'w')
+
+        dumpable = {}
+        for field in Configuration.fields:
+            dumpable[field] = self.__getattribute__(field)
+
+        yaml.safe_dump(dumpable, out, default_flow_style=False)

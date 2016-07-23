@@ -31,6 +31,8 @@ class Assignment(object):
     the assignment.
     """
 
+    config_name = "tastic.yaml"
+
     def __init__(self, path, default_config, use_found=True, name=None):
         """Create a new ``Assignment``.
 

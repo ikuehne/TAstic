@@ -10,7 +10,13 @@ DEFAULT_CONFIG = pkg_resources.resource_filename(__name__,
 class InitSubCommand(subcommand.SubCommand):
 
     def invoke(self, args):
-        pass
+        conf = configuration.Configuration([DEFAULT_CONFIG])
+        self.assignment = assignment.Assignment(args.assignment,
+                                                default_config=conf)
+        local_conf = os.path.join(self.assignment.path,
+                                  assignment.Assignment.config_name)
+        if not os.path.exists(local_conf):
+            conf.dump(local_conf)
 
     def name(self):
         return "init"
@@ -26,6 +32,4 @@ class InitSubCommand(subcommand.SubCommand):
                                      type=t,
                                      required=False)
 
-    def create_assignment(self, path):
         default = configuration.Configuration(yamls=[DEFAULT_CONFIG])
-        return assignment.Assignment(path, default_config=default)
