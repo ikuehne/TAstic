@@ -5,7 +5,7 @@ import re
 
 import yaml
 
-from .error import Error
+from libtastic.common.error import Error
 
 CONFIG_NAME = "tastic.yaml"
 

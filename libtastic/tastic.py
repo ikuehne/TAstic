@@ -2,10 +2,10 @@
 
 import argparse
 
-import init
+import libtastic.init
 
 INVOKE = "invoke"
-SUBCOMMANDS = [init.InitSubCommand]
+SUBCOMMANDS = [libtastic.init.InitSubCommand]
 WHICH_SUBCOMMAND = "subcommand"
 
 def subcommand_names():

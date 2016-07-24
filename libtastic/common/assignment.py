@@ -3,7 +3,7 @@
 import os
 import os.path
 
-from . import configuration
+from libtastic.common import configuration
 
 def path_base(path):
     """Return the last part of ``path``.
