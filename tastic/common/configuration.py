@@ -122,13 +122,18 @@ class Configuration(object):
             Configuration._check_type(*item)
 
     def dump(self, out):
+        close = False
 
         # Open the file if it is not already a filestream.
         if isinstance(out, str):
             out = open(out, 'w')
+            close = True
 
         dumpable = {}
         for field in Configuration.fields:
             dumpable[field] = self.__getattribute__(field)
 
         yaml.safe_dump(dumpable, out, default_flow_style=False)
+
+        if close:
+            out.close()
