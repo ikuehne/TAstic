@@ -3,9 +3,11 @@
 import argparse
 
 import libtastic.init
+import libtastic.compare
 
 INVOKE = "invoke"
-SUBCOMMANDS = [libtastic.init.InitSubCommand]
+SUBCOMMANDS = [libtastic.init.InitSubCommand,
+               libtastic.compare.CompareSubCommand]
 WHICH_SUBCOMMAND = "subcommand"
 
 def subcommand_names():
