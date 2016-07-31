@@ -5,7 +5,7 @@ import random
 import string
 import zlib
 
-from libtastic.common import error
+from libtastic.core import error
 
 def _words(stream, strip_punctuation=True):
     """Take the given file-like input stream and return an iterator of words."""

@@ -2,7 +2,7 @@ import argparse
 import os.path
 import pkg_resources
 
-from libtastic.common import configuration, assignment, subcommand
+from libtastic.core import configuration, assignment, subcommand
 
 DEFAULT_CONFIG = pkg_resources.resource_filename(__name__,
                                                  "resources/default.yaml")

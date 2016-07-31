@@ -2,8 +2,8 @@
 
 import argparse
 
-from libtastic.common.minhash import MinHash
-from libtastic.common.subcommand import SubCommand
+from libtastic.core.minhash import MinHash
+from libtastic.core.subcommand import SubCommand
 
 class CompareSubCommand(SubCommand):
     """A sub-command for comparing submissions."""
