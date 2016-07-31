@@ -25,7 +25,7 @@ class CompareSubCommand(SubCommand):
                 jaccard = minhash1.jaccard(minhash2)
                 if jaccard >= args.threshold:
                     print("%s has similarity %g%% with %s." %
-                            (filename1, jaccard, filename2))
+                            (filename1, jaccard * 100, filename2))
 
     def name(self):
         return "compare"
