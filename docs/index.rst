@@ -9,10 +9,22 @@ TAstic: Tools for happier TAs.
 :Release: |version|
 :Date:    |today|
 
+Overview of the Docs
+--------------------
+
+TAstic is divided into two pieces: a Python library, ``libtastic``, and the
+``tastic`` command-line tool.  The docs are accordingly divided into two pieces:
+API documentation and usage documentation.  If you wish to extend TAstic or
+understand how it works, start with :ref:`the API documentation<libtastic>`.  If
+you just want to use it as a command-line tool, start with :ref:`the tool
+documentation<intro>`.
+
 Contents
 --------
 
 .. toctree::
-   :maxdepth: 2
 
-   Getting started <intro>
+   :maxdepth: 3
+
+   libtastic
+   Usage documentation <intro/>
