@@ -17,8 +17,10 @@ if __name__ == "__main__":
         package_data={
             # For now, just include all YAML files, as the only data we need are
             # default configurations.
-            "": "*.yaml"
+            "": ["*.yaml"]
         },
 
-        url="http://tastic.readthedocs.io/en/latest/"
+        url="http://tastic.readthedocs.io/en/latest/",
+
+       scripts=['tastic/tastic']
     )

@@ -5,7 +5,7 @@ import random
 import string
 import zlib
 
-from libtastic.core import error
+from tastic import error
 
 def _words(stream, strip_punctuation=True):
     """Take the given file-like input stream and return an iterator of words."""
@@ -110,9 +110,13 @@ class MinHash(object):
 
     def jaccard(self, other):
         """Approximate the Jaccard coefficient with the other set."""
+        if self._mins is None or other._mins is None:
+            return 0.0
+
         if len(self._mins) != len(other._mins):
             raise MinHashError("Only MinHashes of the same size can be "
                                "compared.")
+
         count_same = 0
         for (m1, m2) in zip(self._mins, other._mins):
             if m1 == m2:
