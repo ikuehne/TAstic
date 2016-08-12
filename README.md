@@ -6,7 +6,7 @@ files.  For example:
 
 ~~~
 $ tastic shakespeare/comedies/\* -t 0.05
-comedies/asyoulikeit has similarity 5.07812% with comedies/measureforemeasure.
+shakespeare/comedies/asyoulikeit has similarity 5.07812% with shakespeare/comedies/measureforemeasure.
 ~~~
 
 Documentation can be found at
