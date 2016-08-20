@@ -3,17 +3,22 @@
 """Entry point for the ``tastic`` command-line tool."""
 
 import argparse
+import http.client as http
 import os
 import re
 import sys
 
 from tastic.minhash import MinHash
+from tastic import client
 
 THRESHOLD_HELP = ("A number from 0 to 1 representing the minimum Jaccard "
                   "coefficient to report a pair of submissions.")
 ASSIGNMENT_HELP = ("A Python regex matching the name of the assignment to "
                    "compare.  If provided, directory instead of file names must"
                    " be given as submissions.")
+PUSH_HELP = ("If specified, instead of locally comparing the hashes of the "
+             "provided submissions submit them to the server at the given "
+             "hostname and port.")
 
 def get_assignment(regex, directory):
     """Get a path to an assignment matching ``regex`` in ``directory``.
@@ -35,7 +40,7 @@ def invoke(args, parser):
     """Given the ``Namespace`` parsed out of the arguments, run the program."""
     if args.threshold < 0 or args.threshold > 1:
         parser.print_help()
-        exit(1)
+        sys.exit(1)
 
     if args.assignment_regex is not None:
         submissions = [get_assignment(args.assignment_regex, s)
@@ -45,6 +50,17 @@ def invoke(args, parser):
             sys.stderr.write("WARNING: No matches found for assignment name.\n")
     else:
         submissions = args.submission
+
+    if args.push is not None:
+        (hostname, port) = args.push
+        try:
+            port = int(port)
+        except ValueError:
+            sys.stderr.write("Invalid port: %d\n" % port)
+            sys.exit(1)
+        for infile in submissions:
+            client.submit(infile, hostname, port)
+        return
 
     minhashes = {}
     for infile in submissions:
@@ -64,20 +80,28 @@ def invoke(args, parser):
 def main():
     parser = argparse.ArgumentParser(description="Tools for happier TAs.")
 
+    # Cannot specify both a threshold and a server to post to (the threshold is
+    # set by the server).
+    g = parser.add_mutually_exclusive_group()
+
     # Add command-line arguments.
     parser.add_argument("submission",
                         nargs="+",
                         help="A list of submissions to compare.",
                         type=str)
-    parser.add_argument("-t", "--threshold",
-                        default=0.25,
-                        help=THRESHOLD_HELP,
-                        type=float,
-                        dest="threshold")
+    g.add_argument("-t", "--threshold",
+                   default=0.25,
+                   help=THRESHOLD_HELP,
+                   type=float,
+                   dest="threshold")
     parser.add_argument("-a", "--assignment",
                         help=ASSIGNMENT_HELP,
                         type=str,
                         dest="assignment_regex")
+    g.add_argument("-p", "--push",
+                   help=PUSH_HELP,
+                   nargs=2,
+                   metavar=("hostname", "port"))
 
     args = parser.parse_args()
     invoke(args, parser)

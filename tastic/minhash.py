@@ -52,7 +52,9 @@ class MinHash(object):
 
         return result
 
-    def __init__(self, f=None, count=256, seed=0xBEEF, strip_punctuation=True,
+    def __init__(self, f=None,
+                 count=256, seed=0xabbeefcd,
+                 strip_punctuation=True,
                  shingle_size=3):
         """Create a new MinHash.
 
@@ -122,3 +124,14 @@ class MinHash(object):
             if m1 == m2:
                 count_same += 1
         return count_same / len(self._mins)
+
+    def hashes(self):
+        """Return a list of minimum hashes seen so far, as a ``bytes`` object.
+        """
+        if self._mins is None:
+            mins = [0 for _ in self._hashes]
+        else:
+            mins = self._mins
+
+        bytes_iter = map(lambda x: x.to_bytes(4, byteorder="big"), mins)
+        return b"".join(bytes_iter)
