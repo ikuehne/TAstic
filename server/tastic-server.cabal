@@ -1,13 +1,13 @@
 name:                tastic-server
-version:             0.1.0.0
-synopsis:            Simple project template from stack
+version:             0.1.0
+synopsis:            A server for the tastic similarity detection system.
 description:         Please see README.md
--- homepage:            https://github.com/githubuser/warp-test#readme
-license:             BSD3
+homepage:            https://github.com/ikuehne/tastic
+license:             GPL3
 license-file:        LICENSE
-author:              Author name here
-maintainer:          example@example.com
-copyright:           2016 Author name here
+author:              Ian Kuehne
+maintainer:          ikuehne@caltech.edu
+copyright:           2016 Ian Kuehne
 category:            Web
 build-type:          Simple
 cabal-version:       >=1.10
