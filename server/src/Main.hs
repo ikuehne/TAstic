@@ -45,9 +45,8 @@ handlePost req = handleErrors $
      getMatches   ast sub body
      return $ responseLBS Status.status201 [] "Created resource"
 
-
 ------------------------------------------------------------------------------
--- Handline errors.
+-- Handling errors.
 ------------------------------------------------------------------------------
 
 handleErrors :: Except.ExceptT BS.ByteString IO Wai.Response
@@ -60,7 +59,6 @@ badRequest str = responseLBS Status.badRequest400
                              str
   where bodyLen :: ByteString
         bodyLen = BS.toStrict . encode . show $ BS.length str
-
 
 ------------------------------------------------------------------------------
 -- Utilities.

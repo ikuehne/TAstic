@@ -57,7 +57,6 @@ handleSimilarity similarity thisSub ast sub
            ++ unpack ast ++ "/" ++ unpack thisSub
            ++ "."
 
-
 ------------------------------------------------------------------------------
 -- Calculating similarities.
 ------------------------------------------------------------------------------

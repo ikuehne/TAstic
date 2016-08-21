@@ -55,7 +55,6 @@ getAssignmentCommand = "SELECT submission, hashes FROM minhashes \
                                                  \WHERE assignment = ?\
                                                  \AND submission <> ?"
 
-
 ------------------------------------------------------------------------------
 -- Performing operations on the @minhashes@ table.
 ------------------------------------------------------------------------------
@@ -96,7 +95,6 @@ foldSubmissions assignment submission handleRow = withConnectionExcept $
                           (const $ Except.runExceptT . handleRow )
        in Except.ExceptT main
   where unit = Right ()
-
 
 ------------------------------------------------------------------------------
 -- Wrappers over @sqlite-simple@ functionality.
