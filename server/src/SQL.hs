@@ -21,6 +21,10 @@ import Database.SQLite.Simple.ToField ()
 
 import Config
 
+------------------------------------------------------------------------------
+-- SQL queries.
+------------------------------------------------------------------------------
+
 -- | Insert a row into the @minhashes@.
 --
 -- Contains three paramaters: the assignment, the submission, and the hashes.
@@ -51,6 +55,28 @@ getAssignmentCommand = "SELECT submission, hashes FROM minhashes \
                                                  \WHERE assignment = ?\
                                                  \AND submission <> ?"
 
+
+------------------------------------------------------------------------------
+-- Performing operations on the @minhashes@ table.
+------------------------------------------------------------------------------
+
+-- | Create the @minhashes@ table.
+createTable :: IO ()
+createTable = SQL.withConnection (dbName config) $ \conn ->
+    do SQL.execute_ conn createTableCommand
+       SQL.execute_ conn createIndexCommand
+
+-- | Insert a row into the @minhashes@ table.
+insertHashes :: Text
+             -> Text
+             -> BS.ByteString
+             -> Except.ExceptT BS.ByteString IO ()
+insertHashes assignment submission bytes =
+    withConnectionExcept $ \conn -> handleSQL $
+      SQL.execute conn insertRowCommand (assignment,
+                                         submission,
+                                         SQL.SQLBlob $ BS.toStrict bytes)
+
 -- | Perform an action on each row in an assignment
 --
 -- @foldSubmissions assignment submission handler@ applies @handler@ to each
@@ -71,28 +97,16 @@ foldSubmissions assignment submission handleRow = withConnectionExcept $
        in Except.ExceptT main
   where unit = Right ()
 
--- | Create the @minhashes@ table.
-createTable :: IO ()
-createTable = SQL.withConnection (dbName config) $ \conn ->
-    do SQL.execute_ conn createTableCommand
-       SQL.execute_ conn createIndexCommand
+
+------------------------------------------------------------------------------
+-- Wrappers over @sqlite-simple@ functionality.
+------------------------------------------------------------------------------
 
 -- | A version of @withConnection@ in the @ExceptT@ monad.
 withConnectionExcept :: (SQL.Connection -> Except.ExceptT BS.ByteString IO ())
                      -> Except.ExceptT BS.ByteString IO ()
 withConnectionExcept f = Except.ExceptT $
   SQL.withConnection (dbName config) (Except.runExceptT . f)
-
--- | Insert a row into the @minhashes@ table.
-insertHashes :: Text
-             -> Text
-             -> BS.ByteString
-             -> Except.ExceptT BS.ByteString IO ()
-insertHashes assignment submission bytes =
-    withConnectionExcept $ \conn -> handleSQL $
-      SQL.execute conn insertRowCommand (assignment,
-                                         submission,
-                                         SQL.SQLBlob $ BS.toStrict bytes)
 
 -- | Handle any errors in the IO monad by putting them in the @ExceptT@ monad.
 handleSQL :: IO () -> Except.ExceptT BS.ByteString IO ()

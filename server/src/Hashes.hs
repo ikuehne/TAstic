@@ -20,6 +20,10 @@ import Data.Text (Text, unpack)
 import Config
 import qualified SQL
 
+------------------------------------------------------------------------------
+-- Finding matches.
+------------------------------------------------------------------------------
+
 -- | For the given assignment, check if it is similar to any others.
 --
 -- Print a message if any matches are found; otherwise do nothing.
@@ -30,23 +34,6 @@ getMatches :: Text
 getMatches ast sub bytes =
   do chunked <- Except.ExceptT . return $ chunk bytes
      SQL.foldSubmissions ast sub (uncurry $ handleRow ast sub chunked)
-
-maybeSplit :: Int64 -> BS.ByteString -> Maybe (Int32, BS.ByteString)
-maybeSplit i str | BS.length x == i = Just (decode x, xs)
-                 | otherwise        = Nothing
-  where (x, xs) = BS.splitAt i str
-
--- | Break a bytestring into 32-bit integers.
-chunk :: BS.ByteString -> Either BS.ByteString [Int32]
-chunk str | len /= nHashes config = Left message
-          | otherwise = Right $ List.unfoldr (maybeSplit 4) str
-  where message = "Incorrect number of hashes"
-        len = fromIntegral (BS.length str) `quot` 4
-
--- | Get fraction of shared hashes between two hash lists.
-jaccard :: [Int32] -> [Int32] -> Double
-jaccard l1 l2 = let count = length . filter id $ zipWith (==) l1 l2
-                 in fromIntegral count / fromIntegral (nHashes config)
 
 -- | Function to pass to @foldSubmissions@.
 handleRow :: Text
@@ -69,3 +56,25 @@ handleSimilarity similarity thisSub ast sub
            ++ " has similarity " ++ show (similarity * 100.0) ++ "% with "
            ++ unpack ast ++ "/" ++ unpack thisSub
            ++ "."
+
+
+------------------------------------------------------------------------------
+-- Calculating similarities.
+------------------------------------------------------------------------------
+
+-- | Get fraction of shared hashes between two hash lists.
+jaccard :: [Int32] -> [Int32] -> Double
+jaccard l1 l2 = let count = length . filter id $ zipWith (==) l1 l2
+                 in fromIntegral count / fromIntegral (nHashes config)
+
+-- | Break a bytestring into 32-bit integers.
+chunk :: BS.ByteString -> Either BS.ByteString [Int32]
+chunk str | len /= nHashes config = Left message
+          | otherwise = Right $ List.unfoldr (maybeSplit 4) str
+  where message = "Incorrect number of hashes"
+        len = fromIntegral (BS.length str) `quot` 4
+
+maybeSplit :: Int64 -> BS.ByteString -> Maybe (Int32, BS.ByteString)
+maybeSplit i str | BS.length x == i = Just (decode x, xs)
+                 | otherwise        = Nothing
+  where (x, xs) = BS.splitAt i str

@@ -20,12 +20,22 @@ import Config
 import Hashes
 import SQL
 
+------------------------------------------------------------------------------
+-- Defining the server.
+------------------------------------------------------------------------------
+
 main :: IO ()
 main = do
     let p = port config
     putStrLn $ "Listening on port " ++ show p
     createTable
     run p app
+
+app :: Application
+app req f | method == Method.methodPost = handlePost req >>= f
+          | otherwise                   = f invalidRequestType
+  where method = Wai.requestMethod req
+        invalidRequestType = badRequest "Invalid request type"
 
 handlePost :: Wai.Request -> IO Wai.Response
 handlePost req = handleErrors $
@@ -34,6 +44,11 @@ handlePost req = handleErrors $
      insertHashes ast sub body
      getMatches   ast sub body
      return $ responseLBS Status.status201 [] "Created resource"
+
+
+------------------------------------------------------------------------------
+-- Handline errors.
+------------------------------------------------------------------------------
 
 handleErrors :: Except.ExceptT BS.ByteString IO Wai.Response
              -> IO Wai.Response
@@ -46,13 +61,12 @@ badRequest str = responseLBS Status.badRequest400
   where bodyLen :: ByteString
         bodyLen = BS.toStrict . encode . show $ BS.length str
 
+
+------------------------------------------------------------------------------
+-- Utilities.
+------------------------------------------------------------------------------
+
 extractPath :: Wai.Request -> Either BS.ByteString (Text, Text)
 extractPath req = case Wai.pathInfo req of
   [ast, sub] -> Right (ast, sub)
   _          -> Left "Invalid URI: must be assignment/submission"
-
-app :: Application
-app req f | method == Method.methodPost = handlePost req >>= f
-          | otherwise                   = f invalidRequestType
-  where method = Wai.requestMethod req
-        invalidRequestType = badRequest "Invalid request type"
