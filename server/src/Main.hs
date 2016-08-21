@@ -22,7 +22,7 @@ import SQL
 
 main :: IO ()
 main = do
-    let p = port defaultConfig
+    let p = port config
     putStrLn $ "Listening on port " ++ show p
     createTable
     run p app
